@@ -1,6 +1,6 @@
 import { Lead } from '@/components/LeadsTable';
 import Link from 'next/link';
-import { ArrowLeft, Mail, Building, User, Calendar, Tag } from 'lucide-react';
+import { ArrowLeft, Mail, Building, User, Calendar, Tag, Linkedin } from 'lucide-react';
 
 async function getLead(id: string): Promise<Lead | null> {
   try {
@@ -135,6 +135,23 @@ export default async function LeadDetailPage({
                   <div>
                     <div className="text-sm text-neutral-500 dark:text-neutral-400">Company</div>
                     <div className="text-neutral-900 dark:text-neutral-100">{lead.company}</div>
+                  </div>
+                </div>
+              )}
+              
+              {lead.linkedin && (
+                <div className="flex items-center gap-3">
+                  <Linkedin className="w-5 h-5 text-neutral-400" />
+                  <div>
+                    <div className="text-sm text-neutral-500 dark:text-neutral-400">LinkedIn</div>
+                    <a 
+                      href={lead.linkedin} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
+                    >
+                      View Profile
+                    </a>
                   </div>
                 </div>
               )}

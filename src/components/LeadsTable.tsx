@@ -10,6 +10,7 @@ export type Lead = {
 	 status: "New" | "Contacted" | "Qualified" | "Lost" | "Customer";
 	 company?: string;
 	 owner?: string;
+	 linkedin?: string;
 	 createdAt: string; // ISO date
 };
 
@@ -26,6 +27,7 @@ export default function LeadsTable({ leads }: LeadsTableProps) {
 						 <th className="px-4 py-3">Lead</th>
 						 <th className="px-4 py-3">Company</th>
 						 <th className="px-4 py-3">Owner</th>
+						 <th className="px-4 py-3">LinkedIn</th>
 						 <th className="px-4 py-3">Status</th>
 						 <th className="px-4 py-3">Created</th>
 					 </tr>
@@ -43,6 +45,20 @@ export default function LeadsTable({ leads }: LeadsTableProps) {
 							 </td>
 							 <td className="px-4 py-3 text-neutral-700 dark:text-neutral-300">{lead.company ?? "-"}</td>
 							 <td className="px-4 py-3 text-neutral-700 dark:text-neutral-300">{lead.owner ?? "Unassigned"}</td>
+							 <td className="px-4 py-3">
+								 {lead.linkedin ? (
+									 <a 
+										 href={lead.linkedin} 
+										 target="_blank" 
+										 rel="noopener noreferrer"
+										 className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
+									 >
+										 View Profile
+									 </a>
+								 ) : (
+									 <span className="text-neutral-400 dark:text-neutral-500">-</span>
+								 )}
+							 </td>
 							 <td className="px-4 py-3">
 								 <span className={getStatusBadgeClasses(lead.status)}>{lead.status}</span>
 							 </td>

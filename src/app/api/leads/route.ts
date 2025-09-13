@@ -40,6 +40,7 @@ export async function GET() {
       email: record.get('Email') as string || '',
       company: record.get('Company') as string || undefined,
       owner: record.get('Owner') as string || undefined,
+      linkedin: record.get('LinkedIn') as string || undefined,
       status: (record.get('Status') as string || 'New') as Lead['status'],
       createdAt: record.get('Created') 
         ? new Date(record.get('Created') as string).toISOString()
