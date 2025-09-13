@@ -27,9 +27,10 @@ async function getLead(id: string): Promise<Lead | null> {
 export default async function LeadDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const lead = await getLead(params.id);
+  const { id } = await params;
+  const lead = await getLead(id);
 
   if (!lead) {
     return (

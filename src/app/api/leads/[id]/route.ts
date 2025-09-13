@@ -4,7 +4,7 @@ import { Lead } from '@/components/LeadsTable';
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check if environment variables are set
@@ -26,8 +26,11 @@ export async function GET(
 
     const tableName = process.env.AIRTABLE_TABLE_NAME || 'Leads';
     
+    // Await params to get the id
+    const { id } = await params;
+    
     // Fetch specific record by ID
-    const record = await base(tableName).find(params.id);
+    const record = await base(tableName).find(id);
 
     // Transform Airtable record to our Lead format
     const lead: Lead = {
