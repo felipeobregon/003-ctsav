@@ -4,7 +4,8 @@ import React from "react";
 import Link from "next/link";
 
 export type Lead = {
-	 id: string;
+	 id: string; // Airtable record ID
+	 customId: string; // Custom ID field from Airtable
 	 name: string;
 	 email: string;
 	 status: "New" | "Contacted" | "Qualified" | "Lost" | "Customer";
@@ -34,7 +35,7 @@ export default function LeadsTable({ leads }: LeadsTableProps) {
 					 {leads.map((lead) => (
 						 <tr key={lead.id} className="border-t border-black/5 dark:border-white/10 hover:bg-neutral-50/80 dark:hover:bg-neutral-800/40 cursor-pointer">
 							 <td className="px-4 py-3">
-								 <Link href={`/leads/${lead.id}`} className="block">
+								 <Link href={`/leads/${lead.customId}`} className="block">
 									 <div className="flex flex-col">
 										 <span className="font-medium text-neutral-900 dark:text-neutral-100 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">{lead.name}</span>
 										 <span className="text-neutral-500 dark:text-neutral-400 text-xs">{lead.email}</span>

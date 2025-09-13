@@ -29,12 +29,27 @@ export async function GET(
     // Await params to get the id
     const { id } = await params;
     
-    // Fetch specific record by ID
-    const record = await base(tableName).find(id);
+    // First, find the record by custom ID field
+    const records = await base(tableName)
+      .select({
+        filterByFormula: `{ID} = "${id}"`,
+        maxRecords: 1,
+      })
+      .all();
+
+    if (records.length === 0) {
+      return NextResponse.json(
+        { error: 'Lead not found' },
+        { status: 404 }
+      );
+    }
+
+    const record = records[0];
 
     // Transform Airtable record to our Lead format
     const lead: Lead = {
       id: record.id,
+      customId: record.get('ID') as string || record.id, // Use custom ID or fallback to record ID
       name: record.get('Name') as string || '',
       email: record.get('Email') as string || '',
       company: record.get('Company') as string || undefined,
