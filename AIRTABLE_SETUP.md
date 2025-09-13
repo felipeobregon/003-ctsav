@@ -10,6 +10,7 @@ Create a `.env.local` file in the project root with the following variables:
 AIRTABLE_API_KEY=your_airtable_api_key_here
 AIRTABLE_BASE_ID=your_airtable_base_id_here
 AIRTABLE_TABLE_NAME=Leads
+AIRTABLE_POSTS_TABLE_NAME=Posts
 ```
 
 ### How to get your Airtable credentials:
@@ -25,12 +26,14 @@ AIRTABLE_TABLE_NAME=Leads
    - Click "API documentation"
    - Your Base ID will be shown in the URL (starts with `app...`)
 
-3. **Table Name**: 
-   - The name of your table in Airtable (defaults to "Leads" if not specified)
+3. **Table Names**: 
+   - **Leads Table**: The name of your leads table in Airtable (defaults to "Leads" if not specified)
+   - **Posts Table**: The name of your posts table in Airtable (defaults to "Posts" if not specified)
 
 ## Required Airtable Fields
 
-Your Airtable table should have the following fields (case-sensitive):
+### Leads Table
+Your leads table should have the following fields (case-sensitive):
 
 - **Name** (Single line text) - Lead's full name
 - **Email** (Email) - Lead's email address  
@@ -44,13 +47,28 @@ Your Airtable table should have the following fields (case-sensitive):
   - Customer
 - **Created** (Date) - When the lead was created (optional, will use Airtable's record creation time if not provided)
 
+### Posts Table
+Your posts table should have the following fields (case-sensitive):
+
+- **Title** (Single line text) - Post title
+- **Content** (Long text) - Post content/description
+- **Author** (Single line text) - Author name
+- **Published At** (Date) - When the post was published
+- **LinkedIn URL** (URL) - Link to the LinkedIn post (optional)
+- **Likes** (Number) - Number of likes (optional)
+- **Comments** (Number) - Number of comments (optional)
+- **Shares** (Number) - Number of shares (optional)
+- **Tags** (Single line text) - Comma-separated tags (optional)
+- **Lead ID** (Single line text) - Reference to the lead who posted this (optional)
+
 ## Example Airtable Setup
 
-1. Create a new base called "CRM Leads"
-2. Create a table called "Leads" 
-3. Add the fields listed above
-4. Set up your Status field as a single select with the 5 options
-5. Add some sample records to test
+1. Create a new base called "CRM Dashboard"
+2. Create two tables:
+   - **"Leads"** - Add the leads fields listed above
+   - **"Posts"** - Add the posts fields listed above
+3. Set up your Status field as a single select with the 5 options
+4. Add some sample records to both tables to test
 
 ## Testing the Integration
 

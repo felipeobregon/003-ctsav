@@ -1,4 +1,5 @@
 import { Lead } from '@/components/LeadsTable';
+import OutreachGenerator from '@/components/OutreachGenerator';
 import Link from 'next/link';
 import { ArrowLeft, Mail, Building, User, Calendar, Tag, Linkedin } from 'lucide-react';
 
@@ -176,16 +177,26 @@ export default async function LeadDetailPage({
         </div>
 
         {/* Actions */}
-        <div className="mt-8 flex gap-4">
-          <button className="px-4 py-2 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-lg hover:bg-neutral-800 dark:hover:bg-neutral-100 transition-colors">
-            Edit Lead
-          </button>
-          <button className="px-4 py-2 border border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors">
-            Add Note
-          </button>
-          <button className="px-4 py-2 border border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors">
-            Send Email
-          </button>
+        <div className="mt-8 space-y-6">
+          <div className="flex gap-4">
+            <button className="px-4 py-2 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-lg hover:bg-neutral-800 dark:hover:bg-neutral-100 transition-colors">
+              Edit Lead
+            </button>
+            <button className="px-4 py-2 border border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors">
+              Add Note
+            </button>
+            <button className="px-4 py-2 border border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors">
+              Send Email
+            </button>
+          </div>
+          
+          {/* Outreach Generation */}
+          <OutreachGenerator 
+            leadId={lead.customId}
+            leadName={lead.name || 'Unnamed Lead'}
+            leadEmail={lead.email}
+            leadCompany={lead.company}
+          />
         </div>
       </main>
     </div>

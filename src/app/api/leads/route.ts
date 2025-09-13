@@ -36,6 +36,7 @@ export async function GET() {
     // Transform Airtable records to our Lead format
     const leads: Lead[] = records.map((record) => ({
       id: record.id,
+      customId: record.get('ID') as string || record.id, // Use custom ID or fallback to record ID
       name: record.get('Name') as string || '',
       email: record.get('Email') as string || '',
       company: record.get('Company') as string || undefined,

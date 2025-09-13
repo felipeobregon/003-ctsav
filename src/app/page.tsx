@@ -1,4 +1,5 @@
 import LeadsTable, { Lead } from "@/components/LeadsTable";
+import Link from "next/link";
 
 async function getLeads(): Promise<Lead[]> {
   try {
@@ -33,6 +34,12 @@ export default async function Home() {
             <span className="text-sm font-semibold tracking-wide text-neutral-800 dark:text-neutral-100">CRM Dashboard</span>
           </div>
           <div className="flex items-center gap-2">
+            <Link 
+              href="/posts"
+              className="rounded-md border border-black/10 dark:border-white/20 px-3 py-1.5 text-sm text-neutral-700 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+            >
+              LinkedIn Posts
+            </Link>
             <button className="rounded-md border border-black/10 dark:border-white/20 px-3 py-1.5 text-sm text-neutral-700 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800">New Lead</button>
           </div>
         </div>
