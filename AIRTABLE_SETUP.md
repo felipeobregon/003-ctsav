@@ -41,6 +41,8 @@ Your leads table should have the following fields (case-sensitive):
 - **Email** (Email) - Lead's email address  
 - **Company** (Single line text) - Company name (optional)
 - **Owner** (Single line text) - Assigned sales person (optional)
+- **LinkedIn** (URL) - Lead's LinkedIn profile URL (optional)
+- **Profile Pic** (URL) - URL to the lead's profile picture (optional)
 - **Status** (Single select) - Lead status with options:
   - New
   - Contacted

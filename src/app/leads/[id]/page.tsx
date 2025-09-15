@@ -186,19 +186,36 @@ export default function LeadDetailPage({
         {/* Lead Header */}
         <div className="bg-white dark:bg-neutral-900 rounded-xl border border-black/10 dark:border-white/15 p-6 mb-6">
           <div className="flex items-start justify-between">
-            <div>
-              <h1 className="text-2xl font-semibold text-neutral-900 dark:text-neutral-100 mb-2">
-                {lead.name || 'Unnamed Lead'}
-              </h1>
-              <div className="flex items-center gap-4 text-sm text-neutral-600 dark:text-neutral-400">
-                <span className="flex items-center gap-1">
-                  <Calendar className="w-4 h-4" />
-                  Created {new Date(lead.createdAt).toLocaleDateString()}
-                </span>
-                <span className="flex items-center gap-1">
-                  <Tag className="w-4 h-4" />
-                  ID: {lead.id}
-                </span>
+            <div className="flex items-start gap-4">
+              {lead.profilePic ? (
+                <img
+                  src={lead.profilePic}
+                  alt={`${lead.name || 'Lead'} profile picture`}
+                  className="w-16 h-16 rounded-full object-cover border-2 border-neutral-200 dark:border-neutral-700"
+                  onError={(e) => {
+                    // Hide image if it fails to load
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+              ) : (
+                <div className="w-16 h-16 rounded-full bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center border-2 border-neutral-300 dark:border-neutral-600">
+                  <User className="w-8 h-8 text-neutral-500 dark:text-neutral-400" />
+                </div>
+              )}
+              <div>
+                <h1 className="text-2xl font-semibold text-neutral-900 dark:text-neutral-100 mb-2">
+                  {lead.name || 'Unnamed Lead'}
+                </h1>
+                <div className="flex items-center gap-4 text-sm text-neutral-600 dark:text-neutral-400">
+                  <span className="flex items-center gap-1">
+                    <Calendar className="w-4 h-4" />
+                    Created {new Date(lead.createdAt).toLocaleDateString()}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Tag className="w-4 h-4" />
+                    ID: {lead.id}
+                  </span>
+                </div>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -277,6 +294,41 @@ export default function LeadDetailPage({
           </div>
         </div>
 
+        {/* Generate Outreach Button */}
+        <div className="mt-8 space-y-4">
+          <button
+            onClick={handleGenerateOutreach}
+            disabled={isGenerating}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+          >
+            {isGenerating ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Generating Message...
+              </>
+            ) : (
+              <>
+                <MessageSquare className="w-4 h-4" />
+                Generate Outreach
+              </>
+            )}
+          </button>
+
+          {generateError && (
+            <div className="bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 rounded-lg p-4">
+              <p className="text-red-700 dark:text-red-300 text-sm">{generateError}</p>
+            </div>
+          )}
+
+          {generateSuccess && (
+            <div className="bg-green-50 dark:bg-green-950/40 border border-green-200 dark:border-green-900 rounded-lg p-4">
+              <p className="text-green-700 dark:text-green-300 text-sm">
+                Message generated successfully! Check the messages section below to see the new message.
+              </p>
+            </div>
+          )}
+        </div>
+
         {/* Messages Section */}
         <div className="mt-8">
           <MessagesSection 
@@ -284,56 +336,6 @@ export default function LeadDetailPage({
             leadName={lead.name || 'Unnamed Lead'}
             refreshTrigger={messagesRefreshTrigger}
           />
-        </div>
-
-        {/* Actions */}
-        <div className="mt-8 space-y-6">
-          <div className="flex gap-4">
-            <button className="px-4 py-2 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-lg hover:bg-neutral-800 dark:hover:bg-neutral-100 transition-colors">
-              Edit Lead
-            </button>
-            <button className="px-4 py-2 border border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors">
-              Add Note
-            </button>
-            <button className="px-4 py-2 border border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors">
-              Send Email
-            </button>
-          </div>
-          
-          {/* Generate Outreach Button */}
-          <div className="space-y-4">
-            <button
-              onClick={handleGenerateOutreach}
-              disabled={isGenerating}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
-            >
-              {isGenerating ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Generating Message...
-                </>
-              ) : (
-                <>
-                  <MessageSquare className="w-4 h-4" />
-                  Generate Outreach
-                </>
-              )}
-            </button>
-
-            {generateError && (
-              <div className="bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 rounded-lg p-4">
-                <p className="text-red-700 dark:text-red-300 text-sm">{generateError}</p>
-              </div>
-            )}
-
-            {generateSuccess && (
-              <div className="bg-green-50 dark:bg-green-950/40 border border-green-200 dark:border-green-900 rounded-lg p-4">
-                <p className="text-green-700 dark:text-green-300 text-sm">
-                  Message generated successfully! Check the messages section above to see the new message.
-                </p>
-              </div>
-            )}
-          </div>
         </div>
       </main>
     </div>

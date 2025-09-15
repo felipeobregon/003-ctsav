@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import { User } from "lucide-react";
 
 export type Lead = {
 	 id: string; // Airtable record ID
@@ -12,6 +13,7 @@ export type Lead = {
 	 company?: string;
 	 owner?: string;
 	 linkedin?: string;
+	 profilePic?: string; // URL to profile picture
 	 createdAt: string; // ISO date
 };
 
@@ -25,6 +27,7 @@ export default function LeadsTable({ leads }: LeadsTableProps) {
 			 <table className="w-full text-left text-sm">
 				 <thead className="bg-neutral-50 dark:bg-neutral-800/60 text-neutral-600 dark:text-neutral-300 text-xs uppercase tracking-wider">
 					 <tr>
+						 <th className="px-4 py-3">Profile</th>
 						 <th className="px-4 py-3">Lead</th>
 						 <th className="px-4 py-3">Company</th>
 						 <th className="px-4 py-3">Owner</th>
@@ -36,6 +39,25 @@ export default function LeadsTable({ leads }: LeadsTableProps) {
 				 <tbody>
 					 {leads.map((lead) => (
 						 <tr key={lead.id} className="border-t border-black/5 dark:border-white/10 hover:bg-neutral-50/80 dark:hover:bg-neutral-800/40 cursor-pointer">
+							 <td className="px-4 py-3">
+								 <Link href={`/leads/${lead.customId}`} className="block">
+									 {lead.profilePic ? (
+										 <img
+											 src={lead.profilePic}
+											 alt={`${lead.name || 'Lead'} profile picture`}
+											 className="w-10 h-10 rounded-full object-cover border border-neutral-200 dark:border-neutral-700"
+											 onError={(e) => {
+												 // Hide image if it fails to load
+												 e.currentTarget.style.display = 'none';
+											 }}
+										 />
+									 ) : (
+										 <div className="w-10 h-10 rounded-full bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center border border-neutral-300 dark:border-neutral-600">
+											 <User className="w-5 h-5 text-neutral-500 dark:text-neutral-400" />
+										 </div>
+									 )}
+								 </Link>
+							 </td>
 							 <td className="px-4 py-3">
 								 <Link href={`/leads/${lead.customId}`} className="block">
 									 <div className="flex flex-col">

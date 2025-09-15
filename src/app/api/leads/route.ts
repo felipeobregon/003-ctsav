@@ -61,6 +61,7 @@ export async function GET() {
       company: record.get('Company') as string || undefined,
       owner: record.get('Owner') as string || undefined,
       linkedin: record.get('LinkedIn') as string || undefined,
+      profilePic: record.get('Profile Pic') as string || undefined,
       status: (record.get('Status') as string || 'New') as Lead['status'],
       createdAt: record.get('Created') 
         ? new Date(record.get('Created') as string).toISOString()
