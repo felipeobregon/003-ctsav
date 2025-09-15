@@ -2,18 +2,20 @@
 
 import React, { useState, useEffect } from "react";
 import { Post } from "@/types/Post";
-import { ExternalLink, Heart, MessageCircle, Share, Calendar, User, Loader2, FileText } from "lucide-react";
+import { ExternalLink, Heart, MessageCircle, Share, Calendar, User, Loader2, FileText, ChevronDown, ChevronRight } from "lucide-react";
 
 type PostsSectionProps = {
   leadId: string;
   leadName: string;
   refreshTrigger?: number;
+  defaultMinimized?: boolean;
 };
 
-export default function PostsSection({ leadId, leadName, refreshTrigger = 0 }: PostsSectionProps) {
+export default function PostsSection({ leadId, leadName, refreshTrigger = 0, defaultMinimized = false }: PostsSectionProps) {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isMinimized, setIsMinimized] = useState(defaultMinimized);
 
   const fetchPosts = async () => {
     try {
@@ -47,16 +49,26 @@ export default function PostsSection({ leadId, leadName, refreshTrigger = 0 }: P
   if (loading) {
     return (
       <div className="bg-white dark:bg-neutral-900 rounded-xl border border-black/10 dark:border-white/15 p-6">
-        <div className="flex items-center gap-3 mb-4">
-          <FileText className="w-5 h-5 text-neutral-400" />
-          <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">Posts by {leadName}</h2>
-        </div>
-        <div className="flex items-center justify-center py-8">
-          <div className="flex items-center gap-2 text-neutral-500 dark:text-neutral-400">
-            <Loader2 className="w-4 h-4 animate-spin" />
-            <span>Loading posts...</span>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <FileText className="w-5 h-5 text-neutral-400" />
+            <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">Posts by {leadName}</h2>
           </div>
+          <button
+            onClick={() => setIsMinimized(!isMinimized)}
+            className="p-1 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded transition-colors"
+          >
+            {isMinimized ? <ChevronRight className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          </button>
         </div>
+        {!isMinimized && (
+          <div className="flex items-center justify-center py-8">
+            <div className="flex items-center gap-2 text-neutral-500 dark:text-neutral-400">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              <span>Loading posts...</span>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -64,15 +76,25 @@ export default function PostsSection({ leadId, leadName, refreshTrigger = 0 }: P
   if (error) {
     return (
       <div className="bg-white dark:bg-neutral-900 rounded-xl border border-black/10 dark:border-white/15 p-6">
-        <div className="flex items-center gap-3 mb-4">
-          <FileText className="w-5 h-5 text-neutral-400" />
-          <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">Posts by {leadName}</h2>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <FileText className="w-5 h-5 text-neutral-400" />
+            <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">Posts by {leadName}</h2>
+          </div>
+          <button
+            onClick={() => setIsMinimized(!isMinimized)}
+            className="p-1 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded transition-colors"
+          >
+            {isMinimized ? <ChevronRight className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          </button>
         </div>
-        <div className="bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 rounded-lg p-4">
-          <p className="text-red-700 dark:text-red-300 text-sm">
-            Error loading posts: {error}
-          </p>
-        </div>
+        {!isMinimized && (
+          <div className="bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 rounded-lg p-4">
+            <p className="text-red-700 dark:text-red-300 text-sm">
+              Error loading posts: {error}
+            </p>
+          </div>
+        )}
       </div>
     );
   }
@@ -80,31 +102,50 @@ export default function PostsSection({ leadId, leadName, refreshTrigger = 0 }: P
   if (posts.length === 0) {
     return (
       <div className="bg-white dark:bg-neutral-900 rounded-xl border border-black/10 dark:border-white/15 p-6">
-        <div className="flex items-center gap-3 mb-4">
-          <FileText className="w-5 h-5 text-neutral-400" />
-          <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">Posts by {leadName}</h2>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <FileText className="w-5 h-5 text-neutral-400" />
+            <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">Posts by {leadName}</h2>
+          </div>
+          <button
+            onClick={() => setIsMinimized(!isMinimized)}
+            className="p-1 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded transition-colors"
+          >
+            {isMinimized ? <ChevronRight className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          </button>
         </div>
-        <div className="text-center py-8">
-          <FileText className="w-12 h-12 text-neutral-300 dark:text-neutral-600 mx-auto mb-3" />
-          <p className="text-neutral-500 dark:text-neutral-400">
-            No posts found for this lead.
-          </p>
-        </div>
+        {!isMinimized && (
+          <div className="text-center py-8">
+            <FileText className="w-12 h-12 text-neutral-300 dark:text-neutral-600 mx-auto mb-3" />
+            <p className="text-neutral-500 dark:text-neutral-400">
+              No posts found for this lead.
+            </p>
+          </div>
+        )}
       </div>
     );
   }
 
   return (
     <div className="bg-white dark:bg-neutral-900 rounded-xl border border-black/10 dark:border-white/15 p-6">
-      <div className="flex items-center gap-3 mb-6">
-        <FileText className="w-5 h-5 text-neutral-400" />
-        <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
-          Posts by {leadName} ({posts.length})
-        </h2>
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <FileText className="w-5 h-5 text-neutral-400" />
+          <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
+            Posts by {leadName} ({posts.length})
+          </h2>
+        </div>
+        <button
+          onClick={() => setIsMinimized(!isMinimized)}
+          className="p-1 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded transition-colors"
+        >
+          {isMinimized ? <ChevronRight className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+        </button>
       </div>
       
-      <div className="space-y-4">
-        {posts.map((post) => (
+      {!isMinimized && (
+        <div className="space-y-4">
+          {posts.map((post) => (
           <div 
             key={post.id} 
             className="border border-neutral-200 dark:border-neutral-700 rounded-lg p-4 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors"
@@ -180,7 +221,8 @@ export default function PostsSection({ leadId, leadName, refreshTrigger = 0 }: P
             )}
           </div>
         ))}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

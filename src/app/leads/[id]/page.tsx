@@ -330,20 +330,22 @@ export default function LeadDetailPage({
           )}
         </div>
 
+        {/* Posts Section */}
+        <div className="mt-8">
+          <PostsSection 
+            leadId={lead.customId}
+            leadName={lead.name || 'Unnamed Lead'}
+            defaultMinimized={true}
+          />
+        </div>
+
         {/* Messages Section */}
         <div className="mt-8">
           <MessagesSection 
             leadId={lead.customId}
             leadName={lead.name || 'Unnamed Lead'}
             refreshTrigger={messagesRefreshTrigger}
-          />
-        </div>
-
-        {/* Posts Section */}
-        <div className="mt-8">
-          <PostsSection 
-            leadId={lead.customId}
-            leadName={lead.name || 'Unnamed Lead'}
+            defaultMinimized={true}
           />
         </div>
       </main>

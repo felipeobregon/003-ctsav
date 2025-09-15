@@ -8,14 +8,15 @@ interface MessagesSectionProps {
   leadId: string;
   leadName: string;
   refreshTrigger?: number; // This will trigger a refresh when it changes
+  defaultMinimized?: boolean;
 }
 
-export default function MessagesSection({ leadId, leadName, refreshTrigger }: MessagesSectionProps) {
+export default function MessagesSection({ leadId, leadName, refreshTrigger, defaultMinimized = false }: MessagesSectionProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
-  const [isMinimized, setIsMinimized] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(defaultMinimized);
 
   useEffect(() => {
     async function fetchMessages() {
@@ -56,13 +57,28 @@ export default function MessagesSection({ leadId, leadName, refreshTrigger }: Me
   if (loading) {
     return (
       <div className="bg-white dark:bg-neutral-900 rounded-xl border border-black/10 dark:border-white/15 p-6">
-        <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-4 flex items-center gap-2">
-          <MessageCircle className="w-5 h-5" />
-          Messages
-        </h2>
-        <div className="flex items-center justify-center py-8">
-          <div className="text-neutral-500 dark:text-neutral-400">Loading messages...</div>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
+            <MessageCircle className="w-5 h-5" />
+            Messages
+          </h2>
+          <button
+            onClick={() => setIsMinimized(!isMinimized)}
+            className="p-1.5 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors rounded hover:bg-neutral-100 dark:hover:bg-neutral-700"
+            title={isMinimized ? 'Expand messages' : 'Minimize messages'}
+          >
+            {isMinimized ? (
+              <ChevronDown className="w-4 h-4" />
+            ) : (
+              <ChevronUp className="w-4 h-4" />
+            )}
+          </button>
         </div>
+        {!isMinimized && (
+          <div className="flex items-center justify-center py-8">
+            <div className="text-neutral-500 dark:text-neutral-400">Loading messages...</div>
+          </div>
+        )}
       </div>
     );
   }
@@ -70,16 +86,31 @@ export default function MessagesSection({ leadId, leadName, refreshTrigger }: Me
   if (error) {
     return (
       <div className="bg-white dark:bg-neutral-900 rounded-xl border border-black/10 dark:border-white/15 p-6">
-        <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-4 flex items-center gap-2">
-          <MessageCircle className="w-5 h-5" />
-          Messages
-        </h2>
-        <div className="flex items-center justify-center py-8">
-          <div className="text-red-500 dark:text-red-400 text-center">
-            <div className="font-medium">Error loading messages</div>
-            <div className="text-sm mt-1">{error}</div>
-          </div>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
+            <MessageCircle className="w-5 h-5" />
+            Messages
+          </h2>
+          <button
+            onClick={() => setIsMinimized(!isMinimized)}
+            className="p-1.5 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors rounded hover:bg-neutral-100 dark:hover:bg-neutral-700"
+            title={isMinimized ? 'Expand messages' : 'Minimize messages'}
+          >
+            {isMinimized ? (
+              <ChevronDown className="w-4 h-4" />
+            ) : (
+              <ChevronUp className="w-4 h-4" />
+            )}
+          </button>
         </div>
+        {!isMinimized && (
+          <div className="flex items-center justify-center py-8">
+            <div className="text-red-500 dark:text-red-400 text-center">
+              <div className="font-medium">Error loading messages</div>
+              <div className="text-sm mt-1">{error}</div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
