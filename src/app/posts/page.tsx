@@ -5,7 +5,7 @@ import { ArrowLeft, Plus, BarChart3 } from "lucide-react";
 
 async function getPosts(): Promise<Post[]> {
   try {
-    const baseUrl = process.env.VERCEL_URL 
+    const baseUrl = process.env.NODE_ENV === 'production' 
       ? `https://${process.env.VERCEL_URL}` 
       : 'http://localhost:3000';
     

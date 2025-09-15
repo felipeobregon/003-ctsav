@@ -3,7 +3,7 @@ import Link from "next/link";
 
 async function getLeads(): Promise<Lead[]> {
   try {
-    const baseUrl = process.env.VERCEL_URL 
+    const baseUrl = process.env.NODE_ENV === 'production' 
       ? `https://${process.env.VERCEL_URL}` 
       : 'http://localhost:3000';
     

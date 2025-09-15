@@ -5,7 +5,7 @@ import { ArrowLeft, Mail, Building, User, Calendar, Tag, Linkedin } from 'lucide
 
 async function getLead(id: string): Promise<Lead | null> {
   try {
-    const baseUrl = process.env.VERCEL_URL 
+    const baseUrl = process.env.NODE_ENV === 'production' 
       ? `https://${process.env.VERCEL_URL}` 
       : 'http://localhost:3000';
     
