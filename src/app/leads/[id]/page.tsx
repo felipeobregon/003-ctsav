@@ -191,15 +191,15 @@ export default function LeadDetailPage({
                 <img
                   src={lead.profilePic}
                   alt={`${lead.name || 'Lead'} profile picture`}
-                  className="w-16 h-16 rounded-full object-cover border-2 border-neutral-200 dark:border-neutral-700"
+                  className="w-24 h-24 rounded-lg object-cover border-2 border-neutral-200 dark:border-neutral-700"
                   onError={(e) => {
                     // Hide image if it fails to load
                     e.currentTarget.style.display = 'none';
                   }}
                 />
               ) : (
-                <div className="w-16 h-16 rounded-full bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center border-2 border-neutral-300 dark:border-neutral-600">
-                  <User className="w-8 h-8 text-neutral-500 dark:text-neutral-400" />
+                <div className="w-24 h-24 rounded-lg bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center border-2 border-neutral-300 dark:border-neutral-600">
+                  <User className="w-12 h-12 text-neutral-500 dark:text-neutral-400" />
                 </div>
               )}
               <div>

@@ -59,6 +59,7 @@ export async function GET() {
       name: record.get('Name') as string || '',
       email: record.get('Email') as string || '',
       company: record.get('Company') as string || undefined,
+      jobTitle: record.get('Job Title') as string || undefined,
       owner: record.get('Owner') as string || undefined,
       linkedin: record.get('LinkedIn') as string || undefined,
       profilePic: record.get('Profile Pic') as string || undefined,

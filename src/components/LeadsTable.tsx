@@ -11,6 +11,7 @@ export type Lead = {
 	 email: string;
 	 status: "New" | "Contacted" | "Qualified" | "Lost" | "Customer";
 	 company?: string;
+	 jobTitle?: string; // Job title/position
 	 owner?: string;
 	 linkedin?: string;
 	 profilePic?: string; // URL to profile picture
@@ -29,6 +30,7 @@ export default function LeadsTable({ leads }: LeadsTableProps) {
 					 <tr>
 						 <th className="px-4 py-3">Profile</th>
 						 <th className="px-4 py-3">Lead</th>
+						 <th className="px-4 py-3">Job Title</th>
 						 <th className="px-4 py-3">Company</th>
 						 <th className="px-4 py-3">Owner</th>
 						 <th className="px-4 py-3">LinkedIn</th>
@@ -66,6 +68,7 @@ export default function LeadsTable({ leads }: LeadsTableProps) {
 									 </div>
 								 </Link>
 							 </td>
+							 <td className="px-4 py-3 text-neutral-700 dark:text-neutral-300">{lead.jobTitle ?? "-"}</td>
 							 <td className="px-4 py-3 text-neutral-700 dark:text-neutral-300">{lead.company ?? "-"}</td>
 							 <td className="px-4 py-3 text-neutral-700 dark:text-neutral-300">{lead.owner ?? "Unassigned"}</td>
 							 <td className="px-4 py-3">
