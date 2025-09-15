@@ -2,23 +2,46 @@ import LeadsTable, { Lead } from "@/components/LeadsTable";
 import Link from "next/link";
 
 async function getLeads(): Promise<Lead[]> {
+  console.log('=== DEBUG: getLeads function called ===');
+  console.log('NODE_ENV:', process.env.NODE_ENV);
+  console.log('VERCEL_URL:', process.env.VERCEL_URL);
+  console.log('VERCEL_REGION:', process.env.VERCEL_REGION);
+  console.log('VERCEL_ENV:', process.env.VERCEL_ENV);
+  
   try {
-    const baseUrl = process.env.NODE_ENV === 'production' 
+    const baseUrl = process.env.VERCEL_URL 
       ? `https://${process.env.VERCEL_URL}` 
       : 'http://localhost:3000';
     
-    const response = await fetch(`${baseUrl}/api/leads`, {
+    console.log('Constructed baseUrl:', baseUrl);
+    const apiUrl = `${baseUrl}/api/leads`;
+    console.log('Full API URL:', apiUrl);
+    
+    console.log('Making fetch request...');
+    const response = await fetch(apiUrl, {
       cache: 'no-store', // Always fetch fresh data
     });
 
+    console.log('Response received:');
+    console.log('- Status:', response.status);
+    console.log('- StatusText:', response.statusText);
+    console.log('- Headers:', Object.fromEntries(response.headers.entries()));
+    console.log('- URL:', response.url);
+
     if (!response.ok) {
-      console.error('Failed to fetch leads:', response.statusText);
+      console.error('❌ Failed to fetch leads:', response.status, response.statusText);
+      const errorText = await response.text();
+      console.error('Error response body:', errorText);
       return [];
     }
 
-    return await response.json();
+    const data = await response.json();
+    console.log('✅ Successfully fetched leads:', data.length, 'records');
+    console.log('Sample lead data:', data[0]);
+    return data;
   } catch (error) {
-    console.error('Error fetching leads:', error);
+    console.error('❌ Error fetching leads:', error);
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
     return [];
   }
 }

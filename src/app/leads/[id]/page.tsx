@@ -4,23 +4,46 @@ import Link from 'next/link';
 import { ArrowLeft, Mail, Building, User, Calendar, Tag, Linkedin } from 'lucide-react';
 
 async function getLead(id: string): Promise<Lead | null> {
+  console.log('=== DEBUG: getLead function called ===');
+  console.log('Lead ID:', id);
+  console.log('NODE_ENV:', process.env.NODE_ENV);
+  console.log('VERCEL_URL:', process.env.VERCEL_URL);
+  console.log('VERCEL_REGION:', process.env.VERCEL_REGION);
+  console.log('VERCEL_ENV:', process.env.VERCEL_ENV);
+  
   try {
-    const baseUrl = process.env.NODE_ENV === 'production' 
+    const baseUrl = process.env.VERCEL_URL 
       ? `https://${process.env.VERCEL_URL}` 
       : 'http://localhost:3000';
     
-    const response = await fetch(`${baseUrl}/api/leads/${id}`, {
+    console.log('Constructed baseUrl:', baseUrl);
+    const apiUrl = `${baseUrl}/api/leads/${id}`;
+    console.log('Full API URL:', apiUrl);
+    
+    console.log('Making fetch request...');
+    const response = await fetch(apiUrl, {
       cache: 'no-store',
     });
 
+    console.log('Response received:');
+    console.log('- Status:', response.status);
+    console.log('- StatusText:', response.statusText);
+    console.log('- Headers:', Object.fromEntries(response.headers.entries()));
+    console.log('- URL:', response.url);
+
     if (!response.ok) {
-      console.error('Failed to fetch lead:', response.statusText);
+      console.error('❌ Failed to fetch lead:', response.status, response.statusText);
+      const errorText = await response.text();
+      console.error('Error response body:', errorText);
       return null;
     }
 
-    return await response.json();
+    const data = await response.json();
+    console.log('✅ Successfully fetched lead:', data);
+    return data;
   } catch (error) {
-    console.error('Error fetching lead:', error);
+    console.error('❌ Error fetching lead:', error);
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
     return null;
   }
 }
