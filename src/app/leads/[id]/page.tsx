@@ -2,6 +2,7 @@
 
 import { Lead } from '@/components/LeadsTable';
 import MessagesSection from '@/components/MessagesSection';
+import PostsSection from '@/components/PostsSection';
 import Link from 'next/link';
 import { ArrowLeft, Mail, Building, User, Calendar, Tag, Linkedin, MessageSquare, Loader2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
@@ -335,6 +336,14 @@ export default function LeadDetailPage({
             leadId={lead.customId}
             leadName={lead.name || 'Unnamed Lead'}
             refreshTrigger={messagesRefreshTrigger}
+          />
+        </div>
+
+        {/* Posts Section */}
+        <div className="mt-8">
+          <PostsSection 
+            leadId={lead.customId}
+            leadName={lead.name || 'Unnamed Lead'}
           />
         </div>
       </main>
