@@ -1,5 +1,6 @@
 import { Lead } from '@/components/LeadsTable';
 import OutreachGenerator from '@/components/OutreachGenerator';
+import MessagesSection from '@/components/MessagesSection';
 import Link from 'next/link';
 import { ArrowLeft, Mail, Building, User, Calendar, Tag, Linkedin } from 'lucide-react';
 
@@ -197,6 +198,14 @@ export default async function LeadDetailPage({
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Messages Section */}
+        <div className="mt-8">
+          <MessagesSection 
+            leadId={lead.customId}
+            leadName={lead.name || 'Unnamed Lead'}
+          />
         </div>
 
         {/* Actions */}

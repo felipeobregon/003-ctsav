@@ -1,0 +1,125 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { Message } from '@/types/Message';
+import { MessageCircle, Clock, User } from 'lucide-react';
+
+interface MessagesSectionProps {
+  leadId: string;
+  leadName: string;
+}
+
+export default function MessagesSection({ leadId, leadName }: MessagesSectionProps) {
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchMessages() {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        const response = await fetch(`/api/messages?recipient=${encodeURIComponent(leadId)}`);
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch messages: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        setMessages(data);
+      } catch (err) {
+        console.error('Error fetching messages:', err);
+        setError(err instanceof Error ? err.message : 'Failed to fetch messages');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchMessages();
+  }, [leadId]);
+
+  if (loading) {
+    return (
+      <div className="bg-white dark:bg-neutral-900 rounded-xl border border-black/10 dark:border-white/15 p-6">
+        <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-4 flex items-center gap-2">
+          <MessageCircle className="w-5 h-5" />
+          Messages
+        </h2>
+        <div className="flex items-center justify-center py-8">
+          <div className="text-neutral-500 dark:text-neutral-400">Loading messages...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-white dark:bg-neutral-900 rounded-xl border border-black/10 dark:border-white/15 p-6">
+        <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-4 flex items-center gap-2">
+          <MessageCircle className="w-5 h-5" />
+          Messages
+        </h2>
+        <div className="flex items-center justify-center py-8">
+          <div className="text-red-500 dark:text-red-400 text-center">
+            <div className="font-medium">Error loading messages</div>
+            <div className="text-sm mt-1">{error}</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white dark:bg-neutral-900 rounded-xl border border-black/10 dark:border-white/15 p-6">
+      <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-4 flex items-center gap-2">
+        <MessageCircle className="w-5 h-5" />
+        Messages
+        <span className="text-sm font-normal text-neutral-500 dark:text-neutral-400">
+          ({messages.length})
+        </span>
+      </h2>
+      
+      {messages.length === 0 ? (
+        <div className="text-center py-8">
+          <MessageCircle className="w-12 h-12 text-neutral-300 dark:text-neutral-600 mx-auto mb-4" />
+          <div className="text-neutral-500 dark:text-neutral-400">
+            No messages found for {leadName}
+          </div>
+          <div className="text-sm text-neutral-400 dark:text-neutral-500 mt-1">
+            Messages will appear here when they are sent to this lead
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {messages.map((message) => (
+            <div
+              key={message.id}
+              className="border border-neutral-200 dark:border-neutral-700 rounded-lg p-4 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors"
+            >
+              <div className="flex items-start justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <User className="w-4 h-4 text-neutral-400" />
+                  <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                    To: {message.recipient}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1 text-xs text-neutral-500 dark:text-neutral-400">
+                  <Clock className="w-3 h-3" />
+                  {new Date(message.createdAt).toLocaleDateString()} at{' '}
+                  {new Date(message.createdAt).toLocaleTimeString([], { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                  })}
+                </div>
+              </div>
+              <div className="text-neutral-900 dark:text-neutral-100 whitespace-pre-wrap">
+                {message.content}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}

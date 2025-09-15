@@ -11,6 +11,7 @@ AIRTABLE_API_KEY=your_airtable_api_key_here
 AIRTABLE_BASE_ID=your_airtable_base_id_here
 AIRTABLE_TABLE_NAME=Leads
 AIRTABLE_POSTS_TABLE_NAME=Posts
+AIRTABLE_MESSAGES_TABLE_NAME=Messages
 ```
 
 ### How to get your Airtable credentials:
@@ -29,6 +30,7 @@ AIRTABLE_POSTS_TABLE_NAME=Posts
 3. **Table Names**: 
    - **Leads Table**: The name of your leads table in Airtable (defaults to "Leads" if not specified)
    - **Posts Table**: The name of your posts table in Airtable (defaults to "Posts" if not specified)
+   - **Messages Table**: The name of your messages table in Airtable (defaults to "Messages" if not specified)
 
 ## Required Airtable Fields
 
@@ -61,14 +63,22 @@ Your posts table should have the following fields (case-sensitive):
 - **Tags** (Single line text) - Comma-separated tags (optional)
 - **Lead ID** (Single line text) - Reference to the lead who posted this (optional)
 
+### Messages Table
+Your messages table should have the following fields (case-sensitive):
+
+- **Content** (Long text) - The message content
+- **Recipient** (Single line text) - The lead ID this message is sent to
+- **Created** (Date) - When the message was created (optional, will use Airtable's record creation time if not provided)
+
 ## Example Airtable Setup
 
 1. Create a new base called "CRM Dashboard"
-2. Create two tables:
+2. Create three tables:
    - **"Leads"** - Add the leads fields listed above
    - **"Posts"** - Add the posts fields listed above
+   - **"Messages"** - Add the messages fields listed above
 3. Set up your Status field as a single select with the 5 options
-4. Add some sample records to both tables to test
+4. Add some sample records to all tables to test
 
 ## Testing the Integration
 
