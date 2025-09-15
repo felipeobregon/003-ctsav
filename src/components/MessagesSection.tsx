@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Message } from '@/types/Message';
-import { MessageCircle, Clock, User } from 'lucide-react';
+import { MessageCircle, Clock, User, Copy, Check } from 'lucide-react';
 
 interface MessagesSectionProps {
   leadId: string;
@@ -13,6 +13,7 @@ export default function MessagesSection({ leadId, leadName }: MessagesSectionPro
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchMessages() {
@@ -38,6 +39,17 @@ export default function MessagesSection({ leadId, leadName }: MessagesSectionPro
 
     fetchMessages();
   }, [leadId]);
+
+  const copyToClipboard = async (content: string, messageId: string) => {
+    try {
+      await navigator.clipboard.writeText(content);
+      setCopiedMessageId(messageId);
+      // Reset the copied state after 2 seconds
+      setTimeout(() => setCopiedMessageId(null), 2000);
+    } catch (err) {
+      console.error('Failed to copy text: ', err);
+    }
+  };
 
   if (loading) {
     return (
@@ -104,13 +116,26 @@ export default function MessagesSection({ leadId, leadName }: MessagesSectionPro
                     To: {message.recipient}
                   </span>
                 </div>
-                <div className="flex items-center gap-1 text-xs text-neutral-500 dark:text-neutral-400">
-                  <Clock className="w-3 h-3" />
-                  {new Date(message.createdAt).toLocaleDateString()} at{' '}
-                  {new Date(message.createdAt).toLocaleTimeString([], { 
-                    hour: '2-digit', 
-                    minute: '2-digit' 
-                  })}
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1 text-xs text-neutral-500 dark:text-neutral-400">
+                    <Clock className="w-3 h-3" />
+                    {new Date(message.createdAt).toLocaleDateString()} at{' '}
+                    {new Date(message.createdAt).toLocaleTimeString([], { 
+                      hour: '2-digit', 
+                      minute: '2-digit' 
+                    })}
+                  </div>
+                  <button
+                    onClick={() => copyToClipboard(message.content, message.id)}
+                    className="p-1.5 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors rounded hover:bg-neutral-100 dark:hover:bg-neutral-700"
+                    title={copiedMessageId === message.id ? 'Copied!' : 'Copy message'}
+                  >
+                    {copiedMessageId === message.id ? (
+                      <Check className="w-4 h-4 text-green-500" />
+                    ) : (
+                      <Copy className="w-4 h-4" />
+                    )}
+                  </button>
                 </div>
               </div>
               <div className="text-neutral-900 dark:text-neutral-100 whitespace-pre-wrap">
