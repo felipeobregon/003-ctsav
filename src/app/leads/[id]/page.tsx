@@ -1,8 +1,10 @@
+'use client';
+
 import { Lead } from '@/components/LeadsTable';
-import OutreachGenerator from '@/components/OutreachGenerator';
 import MessagesSection from '@/components/MessagesSection';
 import Link from 'next/link';
-import { ArrowLeft, Mail, Building, User, Calendar, Tag, Linkedin } from 'lucide-react';
+import { ArrowLeft, Mail, Building, User, Calendar, Tag, Linkedin, MessageSquare, Loader2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
 async function getLead(id: string): Promise<Lead | null> {
   console.log('=== DEBUG: getLead function called ===');
@@ -49,15 +51,96 @@ async function getLead(id: string): Promise<Lead | null> {
   }
 }
 
-export default async function LeadDetailPage({
+export default function LeadDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = await params;
-  const lead = await getLead(id);
+  const [lead, setLead] = useState<Lead | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generateError, setGenerateError] = useState<string | null>(null);
+  const [generateSuccess, setGenerateSuccess] = useState(false);
+  const [messagesRefreshTrigger, setMessagesRefreshTrigger] = useState(0);
 
-  if (!lead) {
+  useEffect(() => {
+    async function fetchLead() {
+      try {
+        setLoading(true);
+        setError(null);
+        const { id } = await params;
+        const leadData = await getLead(id);
+        setLead(leadData);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch lead');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchLead();
+  }, [params]);
+
+  const handleGenerateOutreach = async () => {
+    if (!lead) return;
+    
+    setIsGenerating(true);
+    setGenerateError(null);
+    setGenerateSuccess(false);
+
+    try {
+      const response = await fetch('https://faos.app.n8n.cloud/webhook/generate-message', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: lead.customId
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to generate message: ${response.statusText}`);
+      }
+
+      setGenerateSuccess(true);
+      // Trigger messages refresh to show the new message
+      setMessagesRefreshTrigger(prev => prev + 1);
+      // Reset success message after 3 seconds
+      setTimeout(() => setGenerateSuccess(false), 3000);
+    } catch (err) {
+      setGenerateError(err instanceof Error ? err.message : 'Failed to generate message');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="font-sans min-h-screen bg-neutral-50 dark:bg-neutral-950">
+        <header className="border-b border-black/10 dark:border-white/10 bg-white/60 dark:bg-neutral-900/60 backdrop-blur supports-[backdrop-filter]:bg-white/60 sticky top-0 z-10">
+          <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="h-8 w-8 rounded bg-neutral-900 dark:bg-white" />
+              <span className="text-sm font-semibold tracking-wide text-neutral-800 dark:text-neutral-100">CRM Dashboard</span>
+            </div>
+          </div>
+        </header>
+        <main className="mx-auto max-w-4xl px-6 py-8">
+          <div className="text-center">
+            <div className="flex items-center justify-center mb-4">
+              <Loader2 className="w-8 h-8 animate-spin text-neutral-400" />
+            </div>
+            <h1 className="text-2xl font-semibold text-neutral-900 dark:text-neutral-100 mb-4">Loading Lead...</h1>
+            <p className="text-neutral-600 dark:text-neutral-400">Please wait while we fetch the lead details.</p>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  if (error || !lead) {
     return (
       <div className="font-sans min-h-screen bg-neutral-50 dark:bg-neutral-950">
         <header className="border-b border-black/10 dark:border-white/10 bg-white/60 dark:bg-neutral-900/60 backdrop-blur supports-[backdrop-filter]:bg-white/60 sticky top-0 z-10">
@@ -71,7 +154,9 @@ export default async function LeadDetailPage({
         <main className="mx-auto max-w-4xl px-6 py-8">
           <div className="text-center">
             <h1 className="text-2xl font-semibold text-neutral-900 dark:text-neutral-100 mb-4">Lead Not Found</h1>
-            <p className="text-neutral-600 dark:text-neutral-400 mb-6">The lead you're looking for doesn't exist or has been deleted.</p>
+            <p className="text-neutral-600 dark:text-neutral-400 mb-6">
+              {error || "The lead you're looking for doesn't exist or has been deleted."}
+            </p>
             <Link 
               href="/"
               className="inline-flex items-center gap-2 px-4 py-2 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-lg hover:bg-neutral-800 dark:hover:bg-neutral-100 transition-colors"
@@ -205,6 +290,7 @@ export default async function LeadDetailPage({
           <MessagesSection 
             leadId={lead.customId}
             leadName={lead.name || 'Unnamed Lead'}
+            refreshTrigger={messagesRefreshTrigger}
           />
         </div>
 
@@ -222,13 +308,40 @@ export default async function LeadDetailPage({
             </button>
           </div>
           
-          {/* Outreach Generation */}
-          <OutreachGenerator 
-            leadId={lead.customId}
-            leadName={lead.name || 'Unnamed Lead'}
-            leadEmail={lead.email}
-            leadCompany={lead.company}
-          />
+          {/* Generate Outreach Button */}
+          <div className="space-y-4">
+            <button
+              onClick={handleGenerateOutreach}
+              disabled={isGenerating}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+            >
+              {isGenerating ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Generating Message...
+                </>
+              ) : (
+                <>
+                  <MessageSquare className="w-4 h-4" />
+                  Generate Outreach
+                </>
+              )}
+            </button>
+
+            {generateError && (
+              <div className="bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 rounded-lg p-4">
+                <p className="text-red-700 dark:text-red-300 text-sm">{generateError}</p>
+              </div>
+            )}
+
+            {generateSuccess && (
+              <div className="bg-green-50 dark:bg-green-950/40 border border-green-200 dark:border-green-900 rounded-lg p-4">
+                <p className="text-green-700 dark:text-green-300 text-sm">
+                  Message generated successfully! Check the messages section above to see the new message.
+                </p>
+              </div>
+            )}
+          </div>
         </div>
       </main>
     </div>

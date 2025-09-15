@@ -7,9 +7,10 @@ import { MessageCircle, Clock, User, Copy, Check } from 'lucide-react';
 interface MessagesSectionProps {
   leadId: string;
   leadName: string;
+  refreshTrigger?: number; // This will trigger a refresh when it changes
 }
 
-export default function MessagesSection({ leadId, leadName }: MessagesSectionProps) {
+export default function MessagesSection({ leadId, leadName, refreshTrigger }: MessagesSectionProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -38,7 +39,7 @@ export default function MessagesSection({ leadId, leadName }: MessagesSectionPro
     }
 
     fetchMessages();
-  }, [leadId]);
+  }, [leadId, refreshTrigger]); // Added refreshTrigger as dependency
 
   const copyToClipboard = async (content: string, messageId: string) => {
     try {
