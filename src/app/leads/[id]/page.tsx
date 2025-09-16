@@ -4,7 +4,7 @@ import { Lead } from '@/components/LeadsTable';
 import MessagesSection from '@/components/MessagesSection';
 import PostsSection from '@/components/PostsSection';
 import Link from 'next/link';
-import { ArrowLeft, Mail, Building, User, Calendar, Tag, Linkedin, MessageSquare, Loader2 } from 'lucide-react';
+import { ArrowLeft, Mail, Building, User, Calendar, Tag, Linkedin, MessageSquare, Loader2, RefreshCw } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 async function getLead(id: string): Promise<Lead | null> {
@@ -56,6 +56,10 @@ export default function LeadDetailPage({
   const [generateError, setGenerateError] = useState<string | null>(null);
   const [generateSuccess, setGenerateSuccess] = useState(false);
   const [messagesRefreshTrigger, setMessagesRefreshTrigger] = useState(0);
+  const [isRetrievingPosts, setIsRetrievingPosts] = useState(false);
+  const [retrievePostsError, setRetrievePostsError] = useState<string | null>(null);
+  const [retrievePostsSuccess, setRetrievePostsSuccess] = useState(false);
+  const [postsRefreshTrigger, setPostsRefreshTrigger] = useState(0);
 
   useEffect(() => {
     async function fetchLead() {
@@ -106,6 +110,40 @@ export default function LeadDetailPage({
       setGenerateError(err instanceof Error ? err.message : 'Failed to generate message');
     } finally {
       setIsGenerating(false);
+    }
+  };
+
+  const handleRetrievePosts = async () => {
+    if (!lead) return;
+    
+    setIsRetrievingPosts(true);
+    setRetrievePostsError(null);
+    setRetrievePostsSuccess(false);
+
+    try {
+      const response = await fetch('https://faos.app.n8n.cloud/webhook/pull-posts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: lead.customId
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to retrieve posts: ${response.statusText}`);
+      }
+
+      setRetrievePostsSuccess(true);
+      // Trigger posts refresh to show the new posts
+      setPostsRefreshTrigger(prev => prev + 1);
+      // Reset success message after 3 seconds
+      setTimeout(() => setRetrievePostsSuccess(false), 3000);
+    } catch (err) {
+      setRetrievePostsError(err instanceof Error ? err.message : 'Failed to retrieve posts');
+    } finally {
+      setIsRetrievingPosts(false);
     }
   };
 
@@ -295,25 +333,45 @@ export default function LeadDetailPage({
           </div>
         </div>
 
-        {/* Generate Outreach Button */}
+        {/* Action Buttons */}
         <div className="mt-8 space-y-4">
-          <button
-            onClick={handleGenerateOutreach}
-            disabled={isGenerating}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
-          >
-            {isGenerating ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                Generating Message...
-              </>
-            ) : (
-              <>
-                <MessageSquare className="w-4 h-4" />
-                Generate Outreach
-              </>
-            )}
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={handleGenerateOutreach}
+              disabled={isGenerating}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+            >
+              {isGenerating ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Generating Message...
+                </>
+              ) : (
+                <>
+                  <MessageSquare className="w-4 h-4" />
+                  Generate Outreach
+                </>
+              )}
+            </button>
+            
+            <button
+              onClick={handleRetrievePosts}
+              disabled={isRetrievingPosts}
+              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-green-400 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+            >
+              {isRetrievingPosts ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Retrieving Posts...
+                </>
+              ) : (
+                <>
+                  <RefreshCw className="w-4 h-4" />
+                  Retrieve Posts
+                </>
+              )}
+            </button>
+          </div>
 
           {generateError && (
             <div className="bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 rounded-lg p-4">
@@ -328,6 +386,20 @@ export default function LeadDetailPage({
               </p>
             </div>
           )}
+
+          {retrievePostsError && (
+            <div className="bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 rounded-lg p-4">
+              <p className="text-red-700 dark:text-red-300 text-sm">{retrievePostsError}</p>
+            </div>
+          )}
+
+          {retrievePostsSuccess && (
+            <div className="bg-green-50 dark:bg-green-950/40 border border-green-200 dark:border-green-900 rounded-lg p-4">
+              <p className="text-green-700 dark:text-green-300 text-sm">
+                Posts retrieved successfully! Check the posts section below to see the new posts.
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Posts Section */}
@@ -336,6 +408,7 @@ export default function LeadDetailPage({
             leadId={lead.customId}
             leadName={lead.name || 'Unnamed Lead'}
             defaultMinimized={true}
+            refreshTrigger={postsRefreshTrigger}
           />
         </div>
 
