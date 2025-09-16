@@ -9,9 +9,10 @@ type PostsSectionProps = {
   leadName: string;
   refreshTrigger?: number;
   defaultMinimized?: boolean;
+  onPostClick?: (post: Post) => void;
 };
 
-export default function PostsSection({ leadId, leadName, refreshTrigger = 0, defaultMinimized = false }: PostsSectionProps) {
+export default function PostsSection({ leadId, leadName, refreshTrigger = 0, defaultMinimized = false, onPostClick }: PostsSectionProps) {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -148,7 +149,10 @@ export default function PostsSection({ leadId, leadName, refreshTrigger = 0, def
           {posts.map((post) => (
           <div 
             key={post.id} 
-            className="border border-neutral-200 dark:border-neutral-700 rounded-lg p-4 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors"
+            className={`border border-neutral-200 dark:border-neutral-700 rounded-lg p-4 transition-colors ${
+              onPostClick ? 'cursor-pointer hover:bg-neutral-50 dark:hover:bg-neutral-800/50 hover:border-neutral-300 dark:hover:border-neutral-600' : 'hover:bg-neutral-50 dark:hover:bg-neutral-800/50'
+            }`}
+            onClick={() => onPostClick?.(post)}
           >
             <div className="flex items-start justify-between mb-3">
               <div className="flex-1">
@@ -165,6 +169,7 @@ export default function PostsSection({ leadId, leadName, refreshTrigger = 0, def
                   target="_blank"
                   rel="noopener noreferrer"
                   className="ml-4 inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors text-sm"
+                  onClick={(e) => e.stopPropagation()}
                 >
                   <ExternalLink className="w-4 h-4" />
                   View

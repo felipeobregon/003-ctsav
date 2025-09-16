@@ -2,10 +2,12 @@
 
 import { Lead } from '@/components/LeadsTable';
 import MessagesSection from '@/components/MessagesSection';
+import PostModal from '@/components/PostModal';
 import PostsSection from '@/components/PostsSection';
 import Link from 'next/link';
 import { ArrowLeft, Mail, Building, User, Calendar, Tag, Linkedin, MessageSquare, Loader2, RefreshCw } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { Post } from '@/types/Post';
 
 async function getLead(id: string): Promise<Lead | null> {
   console.log('=== DEBUG: getLead function called ===');
@@ -60,6 +62,8 @@ export default function LeadDetailPage({
   const [retrievePostsError, setRetrievePostsError] = useState<string | null>(null);
   const [retrievePostsSuccess, setRetrievePostsSuccess] = useState(false);
   const [postsRefreshTrigger, setPostsRefreshTrigger] = useState(0);
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     async function fetchLead() {
@@ -145,6 +149,16 @@ export default function LeadDetailPage({
     } finally {
       setIsRetrievingPosts(false);
     }
+  };
+
+  const handlePostClick = (post: Post) => {
+    setSelectedPost(post);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedPost(null);
   };
 
   if (loading) {
@@ -409,6 +423,7 @@ export default function LeadDetailPage({
             leadName={lead.name || 'Unnamed Lead'}
             defaultMinimized={true}
             refreshTrigger={postsRefreshTrigger}
+            onPostClick={handlePostClick}
           />
         </div>
 
@@ -422,6 +437,14 @@ export default function LeadDetailPage({
           />
         </div>
       </main>
+
+      {/* Post Modal */}
+      {isModalOpen && selectedPost && (
+        <PostModal 
+          post={selectedPost}
+          onClose={handleCloseModal}
+        />
+      )}
     </div>
   );
 }
